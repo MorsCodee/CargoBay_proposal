@@ -1,0 +1,26 @@
+/* Light mode (default) */
+:root {
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F7F9FC;
+  --text-primary: #1E2635;
+  --text-secondary: #6B7280;
+  --border-color: #EEF1F6;
+  --shadow-color: rgba(0,0,0,0.1);
+}
+
+/* Dark mode – activated by data-theme attribute */
+[data-theme="dark"] {
+  --bg-primary: #14171A;
+  --bg-secondary: #1A1D22;
+  --text-primary: #F2F2F2;
+  --text-secondary: #B7BEC7;
+  --border-color: #333A40;
+  --shadow-color: rgba(0,0,0,0.4);
+}
+
+/* Use the variables in your components */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}

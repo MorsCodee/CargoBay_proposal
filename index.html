@@ -1,13 +1,148 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cargobay-proposal</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CargoBay AI Assistant — Smart Freight & Risk Chatbot</title>
+  <meta name="description" content="CargoBay AG Smart AI Assistant — instant shipping quotes, route recommendations, and pre-booking delay risk predictions.">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ── Animated Background ── -->
+  <div class="bg-canvas">
+    <div class="bg-grid"></div>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <div class="particles" id="particles"></div>
+  </div>
+
+  <!-- ── Page ── -->
+  <div class="page">
+
+    <!-- Header -->
+    <header class="page-header">
+      <div class="eyebrow">
+        <span class="eyebrow-dot"></span>
+        CargoBay AG &nbsp;•&nbsp; Swiss Freight &amp; Logistics Helper
+      </div>
+      <h1 class="page-title">CARGOBAY <span class="hl">ASSISTANT</span></h1>
+      <p class="page-subtitle">
+        Simple &amp; easy shipping answers! Instant prices, fast route recommendations, and delay warnings in plain words.
+      </p>
+    </header>
+
+    <!-- Live Risk Stats Row -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon rose"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <div class="stat-text">
+          <div class="stat-label">Middle East Sea Routes</div>
+          <div class="stat-value">+5–7 Day Delay <span class="stat-badge rose">MODERATE DELAY</span></div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon amber"><i class="fa-solid fa-water"></i></div>
+        <div class="stat-text">
+          <div class="stat-label">Red Sea / Suez Route</div>
+          <div class="stat-value">+10–14 Day Delay <span class="stat-badge amber">HIGH DELAY</span></div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green"><i class="fa-solid fa-plane"></i></div>
+        <div class="stat-text">
+          <div class="stat-label">Air Cargo Routes</div>
+          <div class="stat-value">Fast &amp; Direct <span class="stat-badge green">SAFE &amp; CLEAR</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Chat Card -->
+    <div class="chat-card">
+
+      <!-- Header -->
+      <div class="card-header">
+        <div class="bot-identity">
+          <div class="bot-avatar">
+            <div class="bot-avatar-inner">CB</div>
+            <div class="bot-avatar-ring"></div>
+          </div>
+          <div>
+            <div class="bot-name">
+              CARGOBAY ASSISTANT
+              <span style="font-size:0.9rem;">🇨🇭</span>
+            </div>
+            <div class="bot-sub">Instant Prices · Easy Routes · Simple Delay Warnings</div>
+          </div>
+        </div>
+        <div class="online-badge">
+          <span class="pulse-dot"></span>
+          Online &amp; Ready
+        </div>
+      </div>
+
+      <!-- Rate Strip -->
+      <div class="rate-strip">
+        <div class="rate-item"><i class="fa-solid fa-plane"></i> Air (Fastest): <strong>CHF 5–15 / kg</strong></div>
+        <span class="rate-sep">|</span>
+        <div class="rate-item"><i class="fa-solid fa-truck"></i> Road: <strong>CHF 1.2–2.5 / km</strong></div>
+        <span class="rate-sep">|</span>
+        <div class="rate-item"><i class="fa-solid fa-ship"></i> Sea (Cheapest): <strong>CHF 80–250 / m³</strong></div>
+      </div>
+
+      <!-- Feed -->
+      <div class="chat-feed" id="chat-feed">
+        <!-- Initial message rendered by JS -->
+      </div>
+
+      <!-- Quick Chips -->
+      <div class="chips-bar">
+        <button class="chip" onclick="sendPrompt('How much to ship 100kg from Zurich to Dubai?')">
+          <i class="fa-solid fa-plane-departure"></i> 🇦🇪 Zurich → Dubai
+        </button>
+        <button class="chip" onclick="sendPrompt('Air freight price from Pakistan to UK for 100kg')">
+          <i class="fa-solid fa-plane"></i> 🇵🇰 🇬🇧 Pakistan → UK
+        </button>
+        <button class="chip" onclick="sendPrompt('Sea freight cost from China to USA for 100kg')">
+          <i class="fa-solid fa-ship"></i> 🇨🇳 🇺🇸 China → USA
+        </button>
+        <button class="chip" onclick="sendPrompt('What is the fastest way to ship cargo?')">
+          <i class="fa-solid fa-bolt"></i> ⚡ Fastest Way
+        </button>
+        <button class="chip" onclick="sendPrompt('Are there any shipping route delays?')">
+          <i class="fa-solid fa-triangle-exclamation"></i> ⚠️ Check Route Delays
+        </button>
+        <button class="chip" onclick="sendPrompt('What documents do I need for shipping?')">
+          <i class="fa-solid fa-file-contract"></i> 📋 Customs Documents
+        </button>
+      </div>
+
+      <!-- Input -->
+      <form class="input-area" id="chat-form">
+        <input
+          type="text"
+          id="chat-input"
+          class="chat-input"
+          placeholder="Ask in simple words... (e.g., How much to ship 100kg from Pakistan to UK?)"
+          autocomplete="off"
+        >
+        <button type="submit" class="send-btn" id="send-btn">
+          Send <i class="fa-solid fa-paper-plane"></i>
+        </button>
+      </form>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="page-footer">
+      CargoBay AG &nbsp;•&nbsp; Swiss Freight Forwarding &amp; Logistics &nbsp;•&nbsp; Zurich Airport &nbsp;•&nbsp; cargobay.ch
+    </footer>
+
+  </div>
+
+  <script src="ai_chatbot.js"></script>
+  <script src="app.js"></script>
+</body>
 </html>

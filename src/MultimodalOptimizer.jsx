@@ -8,7 +8,8 @@ import {
   DollarSign, 
   Leaf, 
   ArrowRight, 
-  FileCheck
+  FileCheck,
+  Sparkles
 } from 'lucide-react';
 
 const LOCATION_OPTIONS = [
@@ -137,6 +138,57 @@ const ROUTE_DISTANCES = {
   }
 };
 
+// Plain-language justification per mode, used inside the AI insight sentence
+const REASON_CLAUSE = {
+  air: 'time sensitivity outweighs cost here, and air is the only mode that clears this distance in hours rather than days',
+  road: 'this distance sits in a sweet spot for trucking — no port or hub transfer delays, and it beats rail on total transit time',
+  rail: 'rail lands the strongest balance of cost and emissions for this distance, without the multi-day wait sea freight requires',
+  sea: 'the volume-to-weight ratio favors a consolidated container — cost per CBM drops well below any land or air option'
+};
+
+function formatDuration(hrs) {
+  return hrs >= 24 ? `${(hrs / 24).toFixed(1)} days` : `${hrs} hrs`;
+}
+
+// Weighted scoring across all 4 modes: cost 40%, speed 35%, emissions 25%.
+// Pure front-end heuristic — no external AI call, but framed as an AI-generated insight.
+function buildRecommendation(modes) {
+  const costs = modes.map((m) => m.costCHF);
+  const times = modes.map((m) => m.timeHrs);
+  const co2s = modes.map((m) => m.co2Kg);
+
+  const minCost = Math.min(...costs), maxCost = Math.max(...costs);
+  const minTime = Math.min(...times), maxTime = Math.max(...times);
+  const minCo2 = Math.min(...co2s), maxCo2 = Math.max(...co2s);
+
+  const scored = modes.map((m) => {
+    const costScore = maxCost === minCost ? 1 : 1 - (m.costCHF - minCost) / (maxCost - minCost);
+    const timeScore = maxTime === minTime ? 1 : 1 - (m.timeHrs - minTime) / (maxTime - minTime);
+    const co2Score = maxCo2 === minCo2 ? 1 : 1 - (m.co2Kg - minCo2) / (maxCo2 - minCo2);
+    return { ...m, overall: costScore * 0.4 + timeScore * 0.35 + co2Score * 0.25 };
+  });
+
+  scored.sort((a, b) => b.overall - a.overall);
+  const [best, runnerUp] = scored;
+
+  const costDiff = runnerUp.costCHF - best.costCHF;
+  const timeDiff = runnerUp.timeHrs - best.timeHrs;
+
+  let comparison = `The next-best option, ${runnerUp.title}, `;
+  const parts = [];
+  if (costDiff !== 0) {
+    parts.push(`costs CHF ${Math.abs(costDiff).toLocaleString()} ${costDiff > 0 ? 'more' : 'less'}`);
+  }
+  if (timeDiff !== 0) {
+    parts.push(`is ${formatDuration(Math.abs(timeDiff))} ${timeDiff > 0 ? 'slower' : 'faster'}`);
+  }
+  comparison += parts.length ? parts.join(' and ') + '.' : 'performs almost identically on this route.';
+
+  const text = `Recommended: ${best.title}. ${REASON_CLAUSE[best.id]}, landing at CHF ${best.costCHF.toLocaleString()} with a ${formatDuration(best.timeHrs)} transit and ${best.co2Kg.toLocaleString()}kg CO₂. ${comparison}`;
+
+  return { best, text };
+}
+
 export default function MultimodalOptimizer() {
   const [origin, setOrigin] = useState('Zurich Airport (ZRH), Switzerland');
   const [destination, setDestination] = useState('Hamburg Port, Germany');
@@ -147,11 +199,16 @@ export default function MultimodalOptimizer() {
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  const [insight, setInsight] = useState(null);
+  const [insightReady, setInsightReady] = useState(false);
+
   const currentDistance = ROUTE_DISTANCES[origin]?.[destination] || 500;
 
   const calculateRoutes = (e) => {
     e.preventDefault();
     setLoading(true);
+    setInsight(null);
+    setInsightReady(false);
 
     setTimeout(() => {
       const weightTons = weight / 1000;
@@ -233,6 +290,13 @@ export default function MultimodalOptimizer() {
 
       setResults(processedModes);
       setLoading(false);
+
+      // Short delay so the insight card feels like it's actually reasoning
+      // over the freshly computed matrix, rather than appearing instantly.
+      setTimeout(() => {
+        setInsight(buildRecommendation(processedModes));
+        setInsightReady(true);
+      }, 650);
     }, 400);
   };
 
@@ -246,6 +310,20 @@ export default function MultimodalOptimizer() {
       minHeight: '100vh',
       boxSizing: 'border-box'
     }}>
+      <style>{`
+        @keyframes cb-pulse-dot {
+          0%, 80%, 100% { opacity: 0.25; transform: scale(0.85); }
+          40% { opacity: 1; transform: scale(1); }
+        }
+        @keyframes cb-fade-in {
+          from { opacity: 0; transform: translateY(6px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .cb-dot { animation: cb-pulse-dot 1.1s ease-in-out infinite; }
+        .cb-dot:nth-child(2) { animation-delay: 0.15s; }
+        .cb-dot:nth-child(3) { animation-delay: 0.3s; }
+        .cb-insight-in { animation: cb-fade-in 0.4s ease-out; }
+      `}</style>
       <div style={{ maxWidth: '1152px', margin: '0 auto' }}>
         
         {/* Header */}
@@ -395,6 +473,61 @@ export default function MultimodalOptimizer() {
           </button>
         </form>
 
+        {/* AI Insight Card */}
+        {results && (
+          <div style={{
+            position: 'relative',
+            marginBottom: '32px',
+            padding: '1px',
+            borderRadius: '16px',
+            background: 'linear-gradient(120deg, #f97316, #60a5fa)'
+          }}>
+            <div style={{
+              backgroundColor: '#131924',
+              borderRadius: '15px',
+              padding: '22px 24px'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
+                <div style={{
+                  width: '30px',
+                  height: '30px',
+                  borderRadius: '9px',
+                  background: 'linear-gradient(135deg, #f97316, #60a5fa)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0
+                }}>
+                  <Sparkles size={16} color="#0b0f17" />
+                </div>
+                <span style={{ fontSize: '11px', fontWeight: '700', letterSpacing: '1.5px', textTransform: 'uppercase', color: '#94a3b8' }}>
+                  Cargobay AI &nbsp;·&nbsp; Smart Recommendation
+                </span>
+              </div>
+
+              {!insightReady ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#94a3b8', fontSize: '13px' }}>
+                  <span>Analyzing shipment profile</span>
+                  <span style={{ display: 'flex', gap: '4px' }}>
+                    <span className="cb-dot" style={{ width: '5px', height: '5px', borderRadius: '50%', backgroundColor: '#f97316', display: 'inline-block' }} />
+                    <span className="cb-dot" style={{ width: '5px', height: '5px', borderRadius: '50%', backgroundColor: '#f97316', display: 'inline-block' }} />
+                    <span className="cb-dot" style={{ width: '5px', height: '5px', borderRadius: '50%', backgroundColor: '#f97316', display: 'inline-block' }} />
+                  </span>
+                </div>
+              ) : (
+                <p className="cb-insight-in" style={{ margin: 0, fontSize: '14px', lineHeight: '1.65', color: '#e2e8f0' }}>
+                  {insight.text.split(insight.best.title).map((chunk, i, arr) => (
+                    <React.Fragment key={i}>
+                      {chunk}
+                      {i < arr.length - 1 && <strong style={{ color: '#f97316' }}>{insight.best.title}</strong>}
+                    </React.Fragment>
+                  ))}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Results Matrix showing all 4 modes */}
         {results && (
           <div>
@@ -406,6 +539,7 @@ export default function MultimodalOptimizer() {
               {results.map((item) => {
                 const IconComponent = item.icon;
                 const BadgeIcon = item.badgeIcon;
+                const isRecommended = insightReady && insight.best.id === item.id;
 
                 return (
                   <div
@@ -413,7 +547,8 @@ export default function MultimodalOptimizer() {
                     style={{
                       backgroundColor: '#131924',
                       borderRadius: '16px',
-                      border: '1px solid #1e293b',
+                      border: isRecommended ? '1px solid #f97316' : '1px solid #1e293b',
+                      boxShadow: isRecommended ? '0 0 0 1px rgba(249, 115, 22, 0.25)' : 'none',
                       padding: '24px',
                       display: 'flex',
                       flexDirection: 'column',

@@ -1,6 +1,11 @@
 import React from "react";
 import { ThemeProvider, useTheme } from "./context/ThemeContext";
 import ThemeToggle from "./components/ThemeToggle";
+import CargobayHeader from "./components/CargobayHeaderV2";
+import CargobayHero from "./components/CargobayHero";
+import CargobayExecutiveSummary from "./components/CargobayExecutiveSummaryV2";
+import CargobayCompanyIntro from "./components/CargobayCompanyIntroV2";
+
 function AppShell() {
   const { darkMode } = useTheme();
 
@@ -16,6 +21,10 @@ function AppShell() {
         position: "relative",
       }}
     >
+      <CargobayHeader />
+      <CargobayHero />
+      <CargobayExecutiveSummary />
+      <CargobayCompanyIntro />
       <ThemeToggle />
     </div>
   );

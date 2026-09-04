@@ -11,6 +11,7 @@ import PainPoints from "./components/PainPoints";
 import SolutionsAndStrengths from "./components/SolutionsAndStrengths";
 import Conclusion from "./components/Conclusion";
 import Financials from "./components/Financials";
+import CargoBayWorkflow from "./components/Workflow";
 
 export default function App() {
 
@@ -25,6 +26,7 @@ export default function App() {
       <PainPoints />
       <SolutionsAndStrengths />
       <Financials />
+      <CargoBayWorkflow />
       <Chatbot />
       <MultimodalOptimizer />
       <Conclusion />

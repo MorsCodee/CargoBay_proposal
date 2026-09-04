@@ -448,7 +448,7 @@ export default function MultimodalOptimizer() {
             style={{
               marginTop: '24px',
               width: '100%',
-              background: 'linear-gradient(to right, #f97316, #f59e0b)',
+              background: 'linear-gradient(to right, #f97326, #f97316)',
               color: '#ffffff',
               fontWeight: '700',
               padding: '14px',

@@ -129,7 +129,7 @@ export default function CargobayCompanyIntro() {
               <div className="section-head">
                 <span className="tag">02 · Company Introduction</span>
                 <h2>Who runs it, what it moves.</h2>
-                <p>Freight forwarding built around picking the right carrier for the job — not the fleet in the yard.</p>
+                <p>Freight forwarding built around picking the right carrier for the job - not the fleet in the yard.</p>
               </div>
               <div className="snap-card">
                 <div className="snap-row"><span className="k">Legal Name</span><span className="v">Cargobay AG</span></div>

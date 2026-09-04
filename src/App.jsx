@@ -4,7 +4,7 @@ import CargobayHeader from "./components/CargobayHeaderV2";
 import CargobayHero from "./components/CargobayHero";
 import CargobayExecutiveSummary from "./components/CargobayExecutiveSummaryV2";
 import CargobayCompanyIntro from "./components/CargobayCompanyIntroV2";
-import MultimodalOptimizer from './MultimodalOptimizer';
+import MultimodalOptimizer from './components/MultimodalOptimizer';
 
 export default function App() {
 

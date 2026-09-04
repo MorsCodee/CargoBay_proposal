@@ -122,7 +122,7 @@ export default function CargobayExecutiveSummary() {
             <div className="section-head reveal">
               <span className="tag">01 · Executive Summary</span>
               <h2>One forwarder. Every mode.</h2>
-              <p>Cargobay AG plans and coordinates global shipments by air, sea, road and rail for importers, exporters, and manufacturers — without owning aircraft, ships, or trucks itself.</p>
+              <p>Cargobay AG plans and coordinates global shipments by air, sea, road and rail for importers, exporters, and manufacturers, without owning aircraft, ships, or trucks itself.</p>
             </div>
             <TiltCard className="photo-frame reveal">
               <img
@@ -144,7 +144,7 @@ export default function CargobayExecutiveSummary() {
             </TiltCard>
             <TiltCard className="exec-stat reveal">
               <div className="num">4</div>
-              <div className="label">Modes — Air, Sea,<br/>Road, Rail</div>
+              <div className="label">Modes - Air, Sea,<br/>Road, Rail</div>
             </TiltCard>
             <TiltCard className="exec-stat reveal">
               <div className="num">100%</div>

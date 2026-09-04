@@ -156,7 +156,7 @@ export default function CargobayHero() {
           <div className="hero-inner">
             <span className="eyebrow">Zurich Airport, Switzerland — Since 2010</span>
             <h1>Freight, moved <em>your way.</em></h1>
-            <p className="lead">Cargobay AG organizes air, sea, road and rail transport for importers and exporters worldwide — one point of contact, every mode, no fleet of its own.</p>
+            <p className="lead">Cargobay AG organizes air, sea, road and rail transport for importers and exporters worldwide; one point of contact, every mode, no fleet of its own.</p>
             <div className="hero-actions">
               <button className="btn-primary-lg">Get a Quote</button>
               <button className="btn-ghost">See Services</button>
